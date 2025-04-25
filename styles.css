@@ -1,0 +1,16 @@
+@charset "UTF-8";
+
+.toggle-icon::before {
+    content: '\25B6'; /* Стрелка вправо */
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.toggle-icon.collapsed::before {
+    content: '\25BC'; /* Стрелка вниз */
+}
+.list-group-item.active {
+    background-color: #007bff; /* Ваш цвет */
+    border-color: #007bff;
+    color: white;
+}
