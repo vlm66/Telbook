@@ -145,23 +145,44 @@ function buildTree(data, parentCode = "") {
     return nodes;
 }
 
-function createTreeList(data, parentElement) {
-    data.forEach((item, index) => {
+function createTreeList(data, parentElement, level = 0) {
+    // Проверяем, что data является массивом
+    if (!Array.isArray(data)) {
+        console.error('Data is not an array:', data);
+        return;
+    }
+
+    // Сортируем данные по полю Name с защитой от отсутствующих или нестроковых значений
+    const sortedData = [...data].sort((a, b) => {
+        const nameA = (a.Name || '').toString().toLowerCase();
+        const nameB = (b.Name || '').toString().toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+
+    sortedData.forEach((item, index) => {
         const li = document.createElement('li');
-        li.className = 'list-group-item';
-        if (item.children && item.children.length) {
+        li.className = `list-group-item level-${level}`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.style.paddingLeft = `${level * 20}px`;
+        contentDiv.style.display = 'inline-block';
+        contentDiv.style.width = '100%';
+        
+        if (item.children && Array.isArray(item.children) && item.children.length) {
             const toggleButton = document.createElement('span');
             toggleButton.className = 'toggle-icon';
             toggleButton.setAttribute('data-bs-toggle', 'collapse');
             toggleButton.setAttribute('data-bs-target', `#collapse-${item.Code}`);
-            toggleButton.setAttribute('aria-expanded', 'true');
+            toggleButton.setAttribute('aria-expanded', 'false');
             toggleButton.setAttribute('aria-controls', `collapse-${item.Code}`);
-            li.appendChild(toggleButton);
+            contentDiv.appendChild(toggleButton);
+            contentDiv.append(` ${item.Name || 'Unnamed'}`);
         } else {
-            li.innerHTML = '&nbsp;&nbsp;&nbsp;';
+            contentDiv.append(item.Name || 'Unnamed');
         }
-        li.append(item.Name);
-        li.dataset.name = item.Name.toLowerCase(); // Сохраняем имя для поиска
+        
+        li.appendChild(contentDiv);
+        li.dataset.name = (item.Name || '').toLowerCase();
         
         li.addEventListener('click', (e) => {
             document.querySelectorAll('#treeList .list-group-item').forEach(el => {
@@ -169,16 +190,26 @@ function createTreeList(data, parentElement) {
             });
             li.classList.add('active');
             filterTableAbonByManager(item.StaffUnit);
-            document.querySelectorAll("#filterInput").textContent="ппп";
+            document.querySelector("#filterInput").textContent = item.Name || 'Unnamed';
             e.stopPropagation();
         });
         parentElement.appendChild(li);
-        if (item.children && item.children.length) {
+        
+        if (item.children && Array.isArray(item.children) && item.children.length) {
             const ul = document.createElement('ul');
-            ul.className = 'list-group collapse show';
+            ul.className = 'list-group collapse';
             ul.id = `collapse-${item.Code}`;
-            createTreeList(item.children, ul);
+            createTreeList(item.children, ul, level + 1);
             parentElement.appendChild(ul);
+        }
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('#treeList')) {
+            document.querySelectorAll('#treeList .list-group-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector("#filterInput").textContent = '';
         }
     });
 }
@@ -236,47 +267,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-function fillTableAbon(jsonData, filter = '') {
-    // Парсим JSON, если передан как строка
-    const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
 
-    // Находим таблицу в DOM
-    const table = document.getElementById('tableAbon');
-    if (!table) {
-        console.error('Таблица с id="tableAbon" не найдена');
-        return;
-    }
 
-    // Очищаем содержимое таблицы
-    table.innerHTML = `
-        <tr>
-            <th>Штатная единица</th>
-            <th>ФИО</th>
-            <th>Телефон</th>
-            <th>Штатная единица руководителя</th>
-        </tr>
-    `;
 
-    // Фильтруем данные
-    const filteredData = data.filter(entry => {
-        const fullName = entry.Employee.FullName.toLowerCase();
-        const phone = entry.Employee.Phone.toLowerCase();
-        const search = filter.toLowerCase();
-        return fullName.includes(search) || phone.includes(search);
-    });
 
-    // Заполняем таблицу отфильтрованными данными
-    filteredData.forEach(entry => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${entry.StaffUnit}</td>
-            <td>${entry.Employee.FullName}</td>
-            <td>${entry.Employee.Phone}</td>
-            <td>${entry.ManagerStaffUnit}</td>
-        `;
-        table.appendChild(row);
-    });
-}
+
+
+
+
+
+
 
 // Пример использования:
 const jsonData = [

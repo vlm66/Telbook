@@ -1,16 +1,64 @@
-@charset "UTF-8";
 
-.toggle-icon::before {
-    content: '\25B6'; /* Стрелка вправо */
-    display: inline-block;
-    margin-right: 5px;
+th.sorted-asc::after {
+    content: " ▲";
+}
+th.sorted-desc::after {
+    content: " ▼";
+}
+.card {
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: #f9f9f9;
 }
 
-.toggle-icon.collapsed::before {
-    content: '\25BC'; /* Стрелка вниз */
+.card {
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.list-group-item.active {
-    background-color: #007bff; /* Ваш цвет */
-    border-color: #007bff;
+.close-card-btn {
+    cursor: pointer;
+}
+
+
+body {
+    background-image: url('bg.png'); /* замените на свой URL */
+   
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+#tableAbon {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.8); /* Полупрозрачный фон */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Тень */
+    font-family: Arial, sans-serif;
+    margin-top: 20px;
+}
+
+#tableAbon th,
+#tableAbon td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+#tableAbon th {
+    background-color: rgba(0, 123, 255, 0.9); /* Цвет заголовка с прозрачностью */
     color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+#tableAbon tr:hover {
+    background-color: rgba(0, 123, 255, 0.1); /* Лёгкое подсвечивание при наведении */
+}
+
+/* Если используются карточки под строкой */
+.card {
+    background-color: rgba(250, 250, 250, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    margin: 10px 0;
 }
